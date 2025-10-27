@@ -646,7 +646,17 @@ func TriggerSchedulerDeploy(scheduler string, appName string, imageTag string) e
 			return fmt.Errorf("Error getting process labels: %w", err)
 		}
 
-		concurrencyPolicy := strings.ToUpper(cronEntry.ConcurrencyPolicy)
+		concurrencyPolicy := strings.ToLower(cronEntry.ConcurrencyPolicy)
+		switch concurrencyPolicy {
+		case "allow":
+			concurrencyPolicy = "Allow"
+		case "forbid":
+			concurrencyPolicy = "Forbid"
+		case "replace":
+			concurrencyPolicy = "Replace"
+		default:
+			return fmt.Errorf("Invalid concurrency_policy specified: %v", concurrencyPolicy)
+		}
 		processValues := ProcessValues{
 			Args:        words,
 			Annotations: annotations,
